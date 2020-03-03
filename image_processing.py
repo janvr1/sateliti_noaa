@@ -2,6 +2,8 @@ from PIL import Image
 import numpy as np
 from skimage import filters as skfilt
 from skimage import exposure as skexp
+from skimage import color as skcolor
+from skimage import restoration as skrestore
 from skimage import img_as_ubyte
 
 
@@ -29,3 +31,19 @@ def equalize_histogram(im_arr):
 
 def compute_histogram(im_arr):
     return skexp.histogram(im_arr)
+
+
+def median_filter(im_arr):
+    return img_as_ubyte(skfilt.median(im_arr))
+
+
+def denoise_wavelet(im_arr):
+    return img_as_ubyte(skrestore.denoise_wavelet(im_arr, 2))
+
+
+def denoise_bilateral(im_arr):
+    return img_as_ubyte(skrestore.denoise_bilateral(im_arr))
+
+
+def sharpen_mask(im_arr):
+    return img_as_ubyte(skfilt.unsharp_mask(im_arr))

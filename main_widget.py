@@ -31,7 +31,7 @@ class MainWidget(QWidget):
         # Gaussian blur slider
         self.gauss_slider = QSlider()
         self.gauss_slider.setOrientation(Qt.Orientation.Horizontal)
-        self.gauss_slider.setRange(0, 100)
+        self.gauss_slider.setRange(0, 10)
         self.gauss_slider.valueChanged.connect(self.gaussian_blur)
         self.gauss_label = QLabel("Gaussian blur")
         self.gauss_button = QPushButton("Apply")
@@ -40,8 +40,8 @@ class MainWidget(QWidget):
         # Gamma slider
         self.gamma_slider = QSlider()
         self.gamma_slider.setOrientation(Qt.Orientation.Horizontal)
-        self.gamma_slider.setRange(1, 100)
-        self.gamma_slider.setValue(50)
+        self.gamma_slider.setRange(1, 11)
+        self.gamma_slider.setValue(6)
         self.gamma_slider.valueChanged.connect(self.gamma_correction)
         self.gamma_label = QLabel("Gamma correction")
         self.gamma_button = QPushButton("Apply")
@@ -50,6 +50,14 @@ class MainWidget(QWidget):
         # Equalize histogram button
         self.eq_hist_button = QPushButton("Equalize histogram")
         self.eq_hist_button.clicked.connect(self.equalize_histogram)
+
+        # Median filter
+        self.median_button = QPushButton("Median filter")
+        self.median_button.clicked.connect(self.median_filter)
+
+        # Colorize button
+        self.sharpen_button = QPushButton("Sharpen")
+        self.sharpen_button.clicked.connect(self.sharpen)
 
         # Undo button
         self.undo_button = QPushButton("Undo")
@@ -75,6 +83,8 @@ class MainWidget(QWidget):
         self.layout_right.addWidget(self.gamma_slider)
         self.layout_right.addWidget(self.gamma_button)
         self.layout_right.addWidget(self.eq_hist_button)
+        self.layout_right.addWidget(self.median_button)
+        self.layout_right.addWidget(self.sharpen_button)
         self.layout_right.addWidget(self.undo_button)
         self.layout_right.addStretch()
         self.layout_right.addWidget(self.hist_label)
@@ -87,6 +97,7 @@ class MainWidget(QWidget):
 
     def new_file_received(self, fname):
         image = load_image(fname)
+        self.history = []
         self.pixmap_label.setPixmap(image.resize((800, 600)).toqpixmap())
         self.im_array = np.array(image)
         self.cur_im_arr = self.im_array
@@ -97,7 +108,7 @@ class MainWidget(QWidget):
 
     @Slot()
     def gaussian_blur(self):
-        value = self.gauss_slider.value() / 25
+        value = self.gauss_slider.value() / 2.5
         self.cur_im_arr = gaussian_blur(self.im_array, value)
         self.refresh_pixmap(self.cur_im_arr)
         # image = Image.fromarray(self.cur_im_arr)
@@ -106,7 +117,7 @@ class MainWidget(QWidget):
 
     @Slot()
     def gamma_correction(self):
-        value = self.gamma_slider.value() / 50
+        value = self.gamma_slider.value() / 5
         self.cur_im_arr = gamma_correction(self.im_array, value)
         self.refresh_pixmap(self.cur_im_arr)
         # image = Image.fromarray(self.cur_im_arr)
@@ -122,6 +133,18 @@ class MainWidget(QWidget):
         self.apply_changes()
 
     @Slot()
+    def median_filter(self):
+        self.cur_im_arr = median_filter(self.im_array)
+        self.refresh_pixmap(self.cur_im_arr)
+        self.apply_changes()
+
+    @Slot()
+    def sharpen(self):
+        self.cur_im_arr = sharpen_mask(self.im_array)
+        self.refresh_pixmap(self.cur_im_arr)
+        self.apply_changes()
+
+    @Slot()
     def apply_changes(self):
         self.history.append(self.im_array)
         self.im_array = self.cur_im_arr
@@ -129,7 +152,9 @@ class MainWidget(QWidget):
 
     @Slot()
     def undo(self):
-        self.im_array = self.history.pop(0)
+        if len(self.history) == 0:
+            return
+        self.im_array = self.history.pop()
         self.refresh_pixmap(self.im_array)
         self.create_histogram(compute_histogram(self.im_array))
 

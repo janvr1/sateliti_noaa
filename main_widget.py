@@ -1,7 +1,6 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
-from PySide2.QtCharts import *
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -28,6 +27,16 @@ class MainWidget(QWidget):
 
         self.history = []
 
+        # Active image picker
+        self.label_AB = QLabel("Select active image")
+        self.radio_A = QRadioButton("A")
+        self.radio_B = QRadioButton("B")
+        self.radio_A.clicked.connect(self.set_active_A)
+        self.radio_B.clicked.connect(self.set_active_B)
+        self.layout_radio = QHBoxLayout()
+        self.layout_radio.addWidget(self.radio_A)
+        self.layout_radio.addWidget(self.radio_B)
+
         # Gaussian blur slider
         self.gauss_slider = QSlider()
         self.gauss_slider.setOrientation(Qt.Orientation.Horizontal)
@@ -40,7 +49,7 @@ class MainWidget(QWidget):
         # Gamma slider
         self.gamma_slider = QSlider()
         self.gamma_slider.setOrientation(Qt.Orientation.Horizontal)
-        self.gamma_slider.setRange(1, 11)
+        self.gamma_slider.setRange(1, 10)
         self.gamma_slider.setValue(6)
         self.gamma_slider.valueChanged.connect(self.gamma_correction)
         self.gamma_label = QLabel("Gamma correction")
@@ -76,6 +85,8 @@ class MainWidget(QWidget):
         self.widget_right = QWidget()
         self.widget_right.setMaximumWidth(400)
         self.layout_right = QVBoxLayout()
+        self.layout_right.addWidget(self.label_AB)
+        self.layout_right.addLayout(self.layout_radio)
         self.layout_right.addWidget(self.gauss_label)
         self.layout_right.addWidget(self.gauss_slider)
         self.layout_right.addWidget(self.gauss_button)
@@ -105,6 +116,14 @@ class MainWidget(QWidget):
 
     def save_current_image(self, fname):
         save_image(fname, self.cur_im_arr)
+
+    @Slot()
+    def set_active_A(self):
+         print("A")
+
+    @Slot()
+    def set_active_B(self):
+        print("B")
 
     @Slot()
     def gaussian_blur(self):
@@ -167,7 +186,7 @@ class MainWidget(QWidget):
     def create_histogram(self, histogram):
         self._static_ax.clear()
         bins = histogram[1]
-        vals = histogram[0] / np.sum(histogram[0])
+        vals = histogram[0]  # / np.sum(histogram[0])
         self._static_ax.bar(bins, vals)
         self._static_ax.set_yticklabels([])
         self._static_ax.figure.canvas.draw()

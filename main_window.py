@@ -56,11 +56,11 @@ class MainWindow(QMainWindow):
         dialog.setFileMode(QFileDialog.FileMode.AnyFile)
 
         # Get file name
-        self.file_name = dialog.getOpenFileName()[0]
+        file_name = dialog.getOpenFileName()[0]
         # print(self.file_name)
-        self.status.showMessage(self.file_name)
+        self.status.showMessage(file_name)
 
-        self.centralWidget().new_file_received(self.file_name)
+        self.centralWidget().new_file_received(file_name)
 
     @Slot()
     def save_file_A(self):

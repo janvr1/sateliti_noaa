@@ -2,6 +2,8 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 
+from functools import partial
+
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -19,6 +21,10 @@ class MainWidget(QWidget):
         self.im_array_A = np.array([])
         self.im_array_B = np.array([])
         self.cur_im_arr = np.array([])
+
+        self.w = 500
+        self.h = 600
+        self.ratio = 1
 
         self.active = None
 
@@ -38,7 +44,7 @@ class MainWidget(QWidget):
 
         # Active image picker
         self.label_AB = QLabel("Select active image")
-        self.label_AB.setMinimumWidth(400)
+        self.label_AB.setMinimumWidth(500)
         self.radio_A = QRadioButton("A")
         self.radio_B = QRadioButton("B")
         self.radio_A.clicked.connect(self.set_active_A)
@@ -54,7 +60,7 @@ class MainWidget(QWidget):
         self.gauss_slider.valueChanged.connect(self.gaussian_blur)
         self.gauss_label = QLabel("Gaussian blur")
         self.gauss_button = QPushButton("Apply")
-        self.gauss_button.clicked.connect(self.apply_changes)
+        self.gauss_button.clicked.connect(partial(self.apply_changes, "Gaussian blur"))
 
         self.gauss_layout = QHBoxLayout()
         self.gauss_layout.addWidget(self.gauss_slider)
@@ -68,7 +74,7 @@ class MainWidget(QWidget):
         self.gamma_slider.valueChanged.connect(self.gamma_correction)
         self.gamma_label = QLabel("Gamma correction")
         self.gamma_button = QPushButton("Apply")
-        self.gamma_button.clicked.connect(self.apply_changes)
+        self.gamma_button.clicked.connect(partial(self.apply_changes, "Gamma correction"))
 
         self.gamma_layout = QHBoxLayout()
         self.gamma_layout.addWidget(self.gamma_slider)
@@ -86,6 +92,10 @@ class MainWidget(QWidget):
         self.sharpen_button = QPushButton("Sharpen")
         self.sharpen_button.clicked.connect(self.sharpen)
 
+        # Flip image
+        self.flip_button = QPushButton("Flip image")
+        self.flip_button.clicked.connect(self.flip)
+
         # Undo button
         self.undo_button = QPushButton("Undo")
         self.undo_button.clicked.connect(self.undo)
@@ -93,7 +103,7 @@ class MainWidget(QWidget):
         self.history_B = []
 
         # Histogram
-        self.canvas = FigureCanvasQTAgg(Figure(figsize=(5, 3)))
+        self.canvas = FigureCanvasQTAgg(Figure())
         self._static_ax = self.canvas.figure.subplots()
         self.hist_label = QLabel("Histogram")
 
@@ -111,9 +121,12 @@ class MainWidget(QWidget):
         self.layout_right.addWidget(self.eq_hist_button)
         self.layout_right.addWidget(self.median_button)
         self.layout_right.addWidget(self.sharpen_button)
+        self.layout_right.addWidget(self.flip_button)
+
+        self.layout_right.addStretch()
 
         self.layout_right.addWidget(self.undo_button)
-        self.layout_right.addStretch()
+
         self.layout_right.addWidget(self.hist_label)
         self.layout_right.addWidget(self.canvas)
 
@@ -133,11 +146,14 @@ class MainWidget(QWidget):
         self.gamma_slider.setValue(5)
         self.gauss_slider.setValue(0)
 
+        self.ratio = self.im_array_A.shape[0] / self.im_array_A.shape[1]
+        self.h = round(self.w * self.ratio)
+
         image_A = Image.fromarray(self.im_array_A)
         image_B = Image.fromarray(self.im_array_B)
 
-        self.pixmapA_label.setPixmap(image_A.resize((400, 600)).toqpixmap())
-        self.pixmapB_label.setPixmap(image_B.resize((400, 600)).toqpixmap())
+        self.pixmapA_label.setPixmap(image_A.resize((self.w, self.h)).toqpixmap())
+        self.pixmapB_label.setPixmap(image_B.resize((self.w, self.h)).toqpixmap())
 
         if self.active == self.imA:
             self.cur_im_arr = self.im_array_A
@@ -159,7 +175,6 @@ class MainWidget(QWidget):
 
     @Slot()
     def set_active_A(self):
-        print("A")
         self.active = self.imA
         self.cur_im_arr = self.im_array_A
         self.create_histogram()
@@ -169,7 +184,6 @@ class MainWidget(QWidget):
         self.active = self.imB
         self.cur_im_arr = self.im_array_B
         self.create_histogram()
-        print("B")
 
     @Slot()
     def gaussian_blur(self):
@@ -201,7 +215,7 @@ class MainWidget(QWidget):
             self.cur_im_arr = equalize_histogram(self.im_array_B)
 
         self.refresh_pixmap(self.cur_im_arr)
-        self.apply_changes()
+        self.apply_changes("Histogram equalization")
 
     @Slot()
     def median_filter(self):
@@ -211,7 +225,7 @@ class MainWidget(QWidget):
             self.cur_im_arr = median_filter(self.im_array_B)
 
         self.refresh_pixmap(self.cur_im_arr)
-        self.apply_changes()
+        self.apply_changes("Median filter")
 
     @Slot()
     def sharpen(self):
@@ -220,10 +234,21 @@ class MainWidget(QWidget):
         if self.active == self.imB:
             self.cur_im_arr = sharpen_mask(self.im_array_B)
         self.refresh_pixmap(self.cur_im_arr)
-        self.apply_changes()
+        self.apply_changes("Sharpen")
 
     @Slot()
-    def apply_changes(self):
+    def flip(self):
+        if self.active == self.imA:
+            self.cur_im_arr = np.flip(self.im_array_A, axis=0)
+            self.refresh_pixmap(self.cur_im_arr)
+            self.apply_changes("Flipped image A")
+        if self.active == self.imB:
+            self.cur_im_arr = np.flip(self.im_array_B, axis=0)
+            self.refresh_pixmap(self.cur_im_arr)
+            self.apply_changes("Flipped image B")
+
+    @Slot()
+    def apply_changes(self, message):
         if self.active == self.imA:
             self.history_A.append(self.im_array_A)
             self.im_array_A = self.cur_im_arr
@@ -234,6 +259,8 @@ class MainWidget(QWidget):
 
         self.gamma_slider.setValue(5)
         self.gauss_slider.setValue(0)
+
+        self.parentWidget().status.showMessage(message)
 
     @Slot()
     def undo(self):
@@ -251,9 +278,9 @@ class MainWidget(QWidget):
     def refresh_pixmap(self, im_arr):
         image = Image.fromarray(im_arr)
         if self.active == self.imA:
-            self.pixmapA_label.setPixmap(image.resize((400, 600)).toqpixmap())
+            self.pixmapA_label.setPixmap(image.resize((self.w, self.h)).toqpixmap())
         if self.active == self.imB:
-            self.pixmapB_label.setPixmap(image.resize((400, 600)).toqpixmap())
+            self.pixmapB_label.setPixmap(image.resize((self.w, self.h)).toqpixmap())
 
     def create_histogram(self):
         histogram = compute_histogram(self.cur_im_arr)

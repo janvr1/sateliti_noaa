@@ -26,10 +26,18 @@ class MainWindow(QMainWindow):
         self.file_menu.addAction(load_action)
 
         # Save file
-        save_action = QAction("Save", self)
-        save_action.setShortcut("Ctrl+S")
-        save_action.triggered.connect(self.save_file)
-        self.file_menu.addAction(save_action)
+        save_A_action = QAction("Save image A", self)
+        # save_A_action.setShortcut("Ctrl+S")
+        save_A_action.triggered.connect(self.save_file_A)
+        self.file_menu.addAction(save_A_action)
+
+        save_B_action = QAction("Save image B", self)
+        save_B_action.triggered.connect(self.save_file_B)
+        self.file_menu.addAction(save_B_action)
+
+        save_AB_action = QAction("Save combined image", self)
+        save_AB_action.triggered.connect(self.save_file_AB)
+        self.file_menu.addAction(save_AB_action)
 
         # Exit action
         exit_action = QAction("Exit", self)
@@ -55,7 +63,7 @@ class MainWindow(QMainWindow):
         self.centralWidget().new_file_received(self.file_name)
 
     @Slot()
-    def save_file(self):
+    def save_file_A(self):
         # Create file picker dialog
         dialog = QFileDialog(self)
         dialog.setAcceptMode(QFileDialog.AcceptSave)
@@ -63,4 +71,26 @@ class MainWindow(QMainWindow):
         file_name = dialog.getSaveFileName()[0]
         print(file_name)
 
-        self.centralWidget().save_current_image(file_name)
+        self.centralWidget().save_image_A(file_name)
+
+    @Slot()
+    def save_file_B(self):
+        # Create file picker dialog
+        dialog = QFileDialog(self)
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
+        # Get file name
+        file_name = dialog.getSaveFileName()[0]
+        print(file_name)
+
+        self.centralWidget().save_image_B(file_name)
+
+    @Slot()
+    def save_file_AB(self):
+        # Create file picker dialog
+        dialog = QFileDialog(self)
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
+        # Get file name
+        file_name = dialog.getSaveFileName()[0]
+        print(file_name)
+
+        self.centralWidget().save_image_AB(file_name)

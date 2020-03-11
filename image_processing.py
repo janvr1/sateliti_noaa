@@ -8,11 +8,17 @@ from skimage import img_as_ubyte
 
 
 def load_image(fname):
-    return Image.open(fname).convert('L')
+    return split_image(np.array(Image.open(fname).convert('L')))
+
+
+def split_image(im_arr):
+    imA = np.array(im_arr[:, :1040])
+    imB = np.array(im_arr[:, 1040:])
+    return imA, imB
 
 
 def save_image(fname, im_arr):
-    Image.fromarray(im_arr).save(fname, "png")
+    Image.fromarray(im_arr).save(fname, format="png")
 
 
 def gaussian_blur(im_arr, sigma):

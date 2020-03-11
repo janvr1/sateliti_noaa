@@ -21,7 +21,7 @@ class MainWidget(QWidget):
         self.cur_im_arr = np.array([])
 
         self.w = 500
-        self.h = 600
+        self.h = 0
         self.ratio = 1
 
         self.active = None
@@ -175,12 +175,16 @@ class MainWidget(QWidget):
     def set_active_A(self):
         self.active = self.imA
         self.cur_im_arr = self.im_array_A
+        self.gamma_slider.setValue(5)
+        self.gauss_slider.setValue(0)
         self.create_histogram()
 
     @Slot()
     def set_active_B(self):
         self.active = self.imB
         self.cur_im_arr = self.im_array_B
+        self.gamma_slider.setValue(5)
+        self.gauss_slider.setValue(0)
         self.create_histogram()
 
     @Slot()

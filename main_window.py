@@ -1,10 +1,9 @@
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-from PySide2.QtCore import *
+from PySide2.QtCore import Slot
+from PySide2.QtGui import QKeySequence
+from PySide2.QtWidgets import QMainWindow, QAction, QFileDialog
 
 
 class MainWindow(QMainWindow):
-    new_file_signal = Signal(str)
 
     def __init__(self, widget):
         QMainWindow.__init__(self)

@@ -1,10 +1,9 @@
 import sys
 
-from PySide2.QtWidgets import QApplication, QStyle
-from PySide2.QtCore import *
+from PySide2.QtWidgets import QApplication
 
-from main_window import MainWindow
 from main_widget import MainWidget
+from main_window import MainWindow
 
 if __name__ == "__main__":
     app = QApplication()

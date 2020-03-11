@@ -1,9 +1,7 @@
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-from PySide2.QtCore import *
-
 from functools import partial
 
+from PySide2.QtCore import Qt, Slot
+from PySide2.QtWidgets import QLabel, QVBoxLayout, QRadioButton, QHBoxLayout, QSlider, QPushButton, QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -103,7 +101,7 @@ class MainWidget(QWidget):
         self.history_B = []
 
         # Histogram
-        self.canvas = FigureCanvasQTAgg(Figure())
+        self.canvas = FigureCanvasQTAgg(Figure(figsize=(4, 2)))
         self._static_ax = self.canvas.figure.subplots()
         self.hist_label = QLabel("Histogram")
 

@@ -2,4 +2,3 @@ scikit-image
 pillow
 numpy
 matplotlib
-PySide2

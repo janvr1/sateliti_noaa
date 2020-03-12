@@ -1,7 +1,8 @@
 from functools import partial
 
 from PySide2.QtCore import Qt, Slot
-from PySide2.QtWidgets import QLabel, QVBoxLayout, QRadioButton, QHBoxLayout, QSlider, QPushButton, QWidget
+from PySide2.QtWidgets import QLabel, QVBoxLayout, QRadioButton, QHBoxLayout, QSlider, QPushButton, QWidget, QDialog, \
+    QFileDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -86,9 +87,13 @@ class MainWidget(QWidget):
         self.median_button = QPushButton("Median filter")
         self.median_button.clicked.connect(self.median_filter)
 
-        # Colorize button
+        # Sharpen button
         self.sharpen_button = QPushButton("Sharpen")
         self.sharpen_button.clicked.connect(self.sharpen)
+
+        # Colorize button
+        self.colorize_button = QPushButton("Colorize")
+        self.colorize_button.clicked.connect(self.colorize)
 
         # Flip image
         self.flip_button = QPushButton("Flip image")
@@ -119,6 +124,7 @@ class MainWidget(QWidget):
         self.layout_right.addWidget(self.eq_hist_button)
         self.layout_right.addWidget(self.median_button)
         self.layout_right.addWidget(self.sharpen_button)
+        self.layout_right.addWidget(self.colorize_button)
         self.layout_right.addWidget(self.flip_button)
 
         self.layout_right.addStretch()
@@ -197,6 +203,7 @@ class MainWidget(QWidget):
 
         self.refresh_pixmap(self.cur_im_arr)
         self.gauss_label.setText(f"Gaussian blur: {value}")
+        # self.create_histogram()
 
     @Slot()
     def gamma_correction(self):
@@ -208,6 +215,7 @@ class MainWidget(QWidget):
 
         self.refresh_pixmap(self.cur_im_arr)
         self.gamma_label.setText(f"Gamma correction: {value}")
+        # self.create_histogram()
 
     @Slot()
     def equalize_histogram(self):
@@ -239,13 +247,47 @@ class MainWidget(QWidget):
         self.apply_changes("Sharpen")
 
     @Slot()
+    def colorize(self):
+        color_im_arr = false_color(self.im_array_A, self.im_array_B)
+        color_im = Image.fromarray(color_im_arr).resize((self.w, self.h))
+
+        color_im_label = QLabel()
+        color_im_label.setPixmap(color_im.toqpixmap())
+
+        color_im_dialog = QDialog(self)
+        color_im_dialog.setWindowTitle("Colorized image")
+
+        save_button = QPushButton("Save")
+        save_button.clicked.connect(partial(self.save_colorized, color_im_arr))
+
+        layout = QVBoxLayout()
+        layout.addWidget(color_im_label)
+        layout.addWidget(save_button)
+
+        color_im_dialog.setLayout(layout)
+        color_im_dialog.show()
+
+        print("colorize finish")
+
+    @Slot()
+    def save_colorized(self, im_arr):
+        # Create file picker dialog
+        dialog = QFileDialog(self)
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
+        # Get file name
+        file_name = dialog.getSaveFileName()[0]
+        if file_name == "": return
+
+        save_image(file_name, im_arr)
+
+    @Slot()
     def flip(self):
         if self.active == self.imA:
-            self.cur_im_arr = np.flip(self.im_array_A, axis=0)
+            self.cur_im_arr = np.flip(np.flip(self.im_array_A, axis=0), axis=1)
             self.refresh_pixmap(self.cur_im_arr)
             self.apply_changes("Flipped image A")
         if self.active == self.imB:
-            self.cur_im_arr = np.flip(self.im_array_B, axis=0)
+            self.cur_im_arr = np.flip(np.flip(self.im_array_B, axis=0), axis=1)
             self.refresh_pixmap(self.cur_im_arr)
             self.apply_changes("Flipped image B")
 

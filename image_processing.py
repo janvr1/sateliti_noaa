@@ -53,3 +53,14 @@ def denoise_bilateral(im_arr):
 
 def sharpen_mask(im_arr):
     return img_as_ubyte(skfilt.unsharp_mask(im_arr))
+
+
+def false_color(im_arr_A, im_arr_B):
+    kA = 0.9
+    kB = 1 - kA
+    mid_im = kA * im_arr_A + kB * im_arr_B
+    mid_im = np.round(mid_im).astype('uint8')
+    zeros = np.zeros(im_arr_A.shape).astype('uint8')
+    color_im = np.dstack([mid_im, im_arr_A, im_arr_B])
+    # color_im = np.dstack([zeros, zeros, im_arr_B])
+    return color_im

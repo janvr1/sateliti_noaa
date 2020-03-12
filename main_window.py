@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
 
         # Get file name
         file_name = dialog.getOpenFileName()[0]
-        # print(self.file_name)
+        if file_name == "": return
         self.status.showMessage(file_name)
 
         self.centralWidget().new_file_received(file_name)
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         dialog.setAcceptMode(QFileDialog.AcceptSave)
         # Get file name
         file_name = dialog.getSaveFileName()[0]
-        print(file_name)
+        if file_name == "": return
 
         self.centralWidget().save_image_A(file_name)
 
@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
         dialog.setAcceptMode(QFileDialog.AcceptSave)
         # Get file name
         file_name = dialog.getSaveFileName()[0]
-        print(file_name)
+        if file_name == "": return
 
         self.centralWidget().save_image_B(file_name)
 
@@ -90,6 +90,6 @@ class MainWindow(QMainWindow):
         dialog.setAcceptMode(QFileDialog.AcceptSave)
         # Get file name
         file_name = dialog.getSaveFileName()[0]
-        print(file_name)
+        if file_name == "": return
 
         self.centralWidget().save_image_AB(file_name)

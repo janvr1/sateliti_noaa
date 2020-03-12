@@ -1,10 +1,9 @@
-from PIL import Image
 import numpy as np
-from skimage import filters as skfilt
+from PIL import Image
 from skimage import exposure as skexp
-from skimage import color as skcolor
-from skimage import restoration as skrestore
+from skimage import filters as skfilt
 from skimage import img_as_ubyte
+from skimage import restoration as skrestore
 
 
 def load_image(fname):
@@ -56,11 +55,11 @@ def sharpen_mask(im_arr):
 
 
 def false_color(im_arr_A, im_arr_B):
-    kA = 0.9
+    kA = 0.8
     kB = 1 - kA
     mid_im = kA * im_arr_A + kB * im_arr_B
     mid_im = np.round(mid_im).astype('uint8')
-    zeros = np.zeros(im_arr_A.shape).astype('uint8')
+
     color_im = np.dstack([mid_im, im_arr_A, im_arr_B])
-    # color_im = np.dstack([zeros, zeros, im_arr_B])
+
     return color_im

@@ -195,6 +195,7 @@ class MainWidget(QWidget):
 
     @Slot()
     def gaussian_blur(self):
+        self.gamma_slider.setValue(5)
         value = self.gauss_slider.value() / 2.5
         if self.active == self.imA:
             self.cur_im_arr = gaussian_blur(self.im_array_A, value)
@@ -207,6 +208,7 @@ class MainWidget(QWidget):
 
     @Slot()
     def gamma_correction(self):
+        self.gauss_slider.setValue(0)
         value = self.gamma_slider.value() / 5
         if self.active == self.imA:
             self.cur_im_arr = gamma_correction(self.im_array_A, value)
@@ -266,8 +268,6 @@ class MainWidget(QWidget):
 
         color_im_dialog.setLayout(layout)
         color_im_dialog.show()
-
-        print("colorize finish")
 
     @Slot()
     def save_colorized(self, im_arr):

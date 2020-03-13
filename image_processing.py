@@ -5,6 +5,10 @@ from skimage import filters as skfilt
 from skimage import img_as_ubyte
 from skimage import restoration as skrestore
 
+from numba import jit, njit
+
+import time as time
+
 
 def load_image(fname):
     return split_image(np.array(Image.open(fname).convert('L')))
@@ -20,12 +24,16 @@ def save_image(fname, im_arr):
     Image.fromarray(im_arr).save(fname, format="png")
 
 
+@jit(forceobj=True)
 def gaussian_blur(im_arr, sigma):
+    start = time.time()
     new_arr = skfilt.gaussian(im_arr, sigma)
     im = img_as_ubyte(np.clip(new_arr, -1, 1))
+    print(time.time() - start)
     return im
 
 
+@jit(forceobj=True)
 def gamma_correction(im_arr, gamma):
     return img_as_ubyte(skexp.adjust_gamma(im_arr, gamma))
 

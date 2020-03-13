@@ -87,6 +87,10 @@ class MainWidget(QWidget):
         self.median_button = QPushButton("Median filter")
         self.median_button.clicked.connect(self.median_filter)
 
+        # Denoise button
+        self.denoise_button = QPushButton("Denoise")
+        self.denoise_button.clicked.connect(self.denoise)
+
         # Sharpen button
         self.sharpen_button = QPushButton("Sharpen")
         self.sharpen_button.clicked.connect(self.sharpen)
@@ -123,6 +127,7 @@ class MainWidget(QWidget):
 
         self.layout_right.addWidget(self.eq_hist_button)
         self.layout_right.addWidget(self.median_button)
+        self.layout_right.addWidget(self.denoise_button)
         self.layout_right.addWidget(self.sharpen_button)
         self.layout_right.addWidget(self.colorize_button)
         self.layout_right.addWidget(self.flip_button)
@@ -196,7 +201,7 @@ class MainWidget(QWidget):
     @Slot()
     def gaussian_blur(self):
         self.gamma_slider.setValue(5)
-        value = self.gauss_slider.value() / 2.5
+        value = self.gauss_slider.value() / 5
         if self.active == self.imA:
             self.cur_im_arr = gaussian_blur(self.im_array_A, value)
         if self.active == self.imB:
@@ -238,6 +243,16 @@ class MainWidget(QWidget):
 
         self.refresh_pixmap(self.cur_im_arr)
         self.apply_changes("Median filter")
+
+    @Slot()
+    def denoise(self):
+        if self.active == self.imA:
+            self.cur_im_arr = denoise_tv(self.im_array_A)
+        if self.active == self.imB:
+            self.cur_im_arr = denoise_tv(self.im_array_B)
+
+        self.refresh_pixmap(self.cur_im_arr)
+        self.apply_changes("Denoise")
 
     @Slot()
     def sharpen(self):
@@ -327,7 +342,10 @@ class MainWidget(QWidget):
             self.pixmapB_label.setPixmap(image.resize((self.w, self.h)).toqpixmap())
 
     def create_histogram(self):
-        histogram = compute_histogram(self.cur_im_arr)
+        if self.active == self.imA:
+            histogram = compute_histogram(self.im_array_A)
+        if self.active == self.imB:
+            histogram = compute_histogram(self.im_array_B)
         self._static_ax.clear()
         bins = histogram[1]
         vals = histogram[0]  # / np.sum(histogram[0])

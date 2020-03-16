@@ -17,7 +17,7 @@ def split_image(im_arr):
 
 
 def save_image(fname, im_arr):
-    Image.fromarray(im_arr).save(fname, format="png")
+    Image.fromarray(im_arr).save(fname)
 
 
 def gaussian_blur(im_arr, sigma):
@@ -52,6 +52,10 @@ def denoise_bilateral(im_arr):
 
 def denoise_tv(im_arr):
     return img_as_ubyte(skrestore.denoise_tv_chambolle(im_arr, weight=0.1))
+
+
+def find_edges_scharr(im_arr):
+    return img_as_ubyte(skfilt.scharr(im_arr))
 
 
 def sharpen_mask(im_arr):

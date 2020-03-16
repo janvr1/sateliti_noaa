@@ -87,6 +87,10 @@ class MainWidget(QWidget):
         self.median_button = QPushButton("Median filter")
         self.median_button.clicked.connect(self.median_filter)
 
+        # Find edges button
+        self.edges_button = QPushButton("Find edges")
+        self.edges_button.clicked.connect(self.find_edges)
+
         # Denoise button
         self.denoise_button = QPushButton("Denoise")
         self.denoise_button.clicked.connect(self.denoise)
@@ -127,6 +131,7 @@ class MainWidget(QWidget):
 
         self.layout_right.addWidget(self.eq_hist_button)
         self.layout_right.addWidget(self.median_button)
+        self.layout_right.addWidget(self.edges_button)
         self.layout_right.addWidget(self.denoise_button)
         self.layout_right.addWidget(self.sharpen_button)
         self.layout_right.addWidget(self.colorize_button)
@@ -173,14 +178,41 @@ class MainWidget(QWidget):
         self.create_histogram()
 
     def save_image_A(self, fname):
-        save_image(fname, self.im_array_A)
+        try:
+            save_image(fname, self.im_array_A)
+        except ValueError:
+            dialog = QDialog(self)
+            msg = "Invalid filename extension.\nPlease enter a valid image extension (such as .png or .jpg)"
+            label = QLabel(msg)
+            layout = QHBoxLayout()
+            layout.addWidget(label)
+            dialog.setLayout(layout)
+            dialog.show()
 
     def save_image_B(self, fname):
-        save_image(fname, self.im_array_B)
+        try:
+            save_image(fname, self.im_array_B)
+        except ValueError:
+            dialog = QDialog(self)
+            msg = "Invalid filename extension.\nPlease enter a valid image extension (such as .png or .jpg)"
+            label = QLabel(msg)
+            layout = QHBoxLayout()
+            layout.addWidget(label)
+            dialog.setLayout(layout)
+            dialog.show()
 
     def save_image_AB(self, fname):
         im_array = np.concatenate((self.im_array_A, self.im_array_B), axis=1)
-        save_image(fname, im_array)
+        try:
+            save_image(fname, im_array)
+        except ValueError:
+            dialog = QDialog(self)
+            msg = "Invalid filename extension.\nPlease enter a valid image extension (such as .png or .jpg)"
+            label = QLabel(msg)
+            layout = QHBoxLayout()
+            layout.addWidget(label)
+            dialog.setLayout(layout)
+            dialog.show()
 
     @Slot()
     def set_active_A(self):
@@ -243,6 +275,16 @@ class MainWidget(QWidget):
 
         self.refresh_pixmap(self.cur_im_arr)
         self.apply_changes("Median filter")
+
+    @Slot()
+    def find_edges(self):
+        if self.active == self.imA:
+            self.cur_im_arr = find_edges_scharr(self.im_array_A)
+        if self.active == self.imB:
+            self.cur_im_arr = find_edges_scharr(self.im_array_B)
+
+        self.refresh_pixmap(self.cur_im_arr)
+        self.apply_changes("Edge detection")
 
     @Slot()
     def denoise(self):

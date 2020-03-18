@@ -66,16 +66,17 @@ def false_color(im_arr_A, im_arr_B):
     A = im_arr_A
     B = im_arr_B
 
-   # kA = 0.9
-   # kB = 1 - kA
-   # C = kA * im_arr_A + kB * im_arr_B
-   # C = np.round(C).astype('uint8')
-    
-    s = 210
-    k = -np.log(0.2)*2/s
+    # old method
+    # kA = 0.9
+    # kB = 1 - kA
+    # C = kA * im_arr_A + kB * im_arr_B
+    # C = np.round(C).astype('uint8')
+
+    s = 180
+    k = -np.log(0.2) * 2 / s
     C = A.copy().astype('float64')
-    K = np.exp(k*(C-s))[np.where(A<s)]
-    C[np.where(A<s)] = K*A[np.where(A<s)]
+    K = np.exp(k * (C - s))[np.where(A < s)]
+    C[np.where(A < s)] = K * A[np.where(A < s)]
     C = np.round(C).astype('uint8')
 
     color_im = np.dstack([C, A, B])

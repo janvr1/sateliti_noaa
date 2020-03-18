@@ -351,9 +351,13 @@ class MainWidget(QWidget):
     @Slot()
     def apply_changes(self, message):
         if self.active == self.imA:
+            if len(self.history_A) > 10:
+                self.history_A.pop(0)
             self.history_A.append(self.im_array_A)
             self.im_array_A = self.cur_im_arr
         if self.active == self.imB:
+            if len(self.history_B) > 10:
+                self.history_B.pop(0)
             self.history_B.append(self.im_array_B)
             self.im_array_B = self.cur_im_arr
         self.create_histogram()

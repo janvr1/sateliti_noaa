@@ -1,0 +1,6 @@
+[Desktop Entry]
+  Name=aptim
+  GenericName=aptim
+  Exec=/home/jan/Projects/sateliti_noaa/venv/bin/python /home/jan/Projects/sateliti_noaa/main.py
+  Terminal=false
+  Type=Application

@@ -1,5 +1,5 @@
-scikit-image
-pillow
-numpy
-matplotlib
-pyside2
+scikit-image==0.17.2
+pillow==7.1.2
+numpy==1.18.4
+matplotlib==3.2.1
+pyside2==5.15.0

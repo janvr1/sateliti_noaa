@@ -24,7 +24,7 @@
 \begin{document}
 \pagenumbering{gobble}
 
-	\title{	\textbf{Izboljšava slik NOAA satelitov}}
+	\title{	\textbf{Postopki izboljšanja slik iz vremenskih satelitov NOAA}}
 	
 	\author[1]{\textbf{Jan Vrhovec}}
 	\affil{\textit{Univerza v Ljubljani, Fakulteta za elektrotehniko}}
@@ -35,7 +35,7 @@
 
 \section{Uvod}
 
-Program "NOAA APT image editor" je napisan v jeziku Python z uporabo knjižnic PySide2 (grafični vmesnik), Pillow (vhodno/izhodne operacije s slikami), scikit-image (obdelava slik), numpy (matrične operacije na slikah) in matplotlib (prikaz histograma). Program je bil izdelan z namenom, da se študentom, ki bi radi sprejemali lastne vremenske slike z nizko cenovnimi SDR sprejemniki olajša naknadna obdelava in izboljšava le-teh. Namenjen je izključno slikam v formatu APT (8-bitni sivinski sliki A in B skupne širine 2080 pikslov in poljubne višine), ki ga na frekvencah okrog 137 MHz oddajajo sateliti ameriške organizacije NOAA. Program omogoča osnovno manipulacijo s slikami in različne metode izboljšave slik.
+Program "NOAA APT image editor" je napisan v jeziku Python z uporabo knjižnic PySide2 (grafični vmesnik), Pillow (vhodno/izhodne operacije s slikami), scikit-image (obdelava slik), numpy (matrične operacije na slikah) in matplotlib (prikaz histograma). Program je bil izdelan z namenom, da se študentom, ki bi radi sprejemali lastne vremenske slike z nizko cenovnimi SDR sprejemniki olajša naknadna obdelava in izboljšava le-teh. Namenjen je izključno slikam v formatu APT (8-bitni sivinski sliki A in B skupne širine 2080 pikslov in poljubne višine), ki ga na frekvencah okrog 137 MHz oddajajo sateliti ameriške organizacije National Oceanic and Atmospheric Administration. Program omogoča osnovno manipulacijo s slikami in različne metode izboljšave slik.
 
 
 \section{Uporabljene metode izboljšav}
@@ -102,13 +102,20 @@ Program slike obarva tako, da za modri kanal barvne slike uporabi sliko B, za ze
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.4\linewidth]{false_color.png}
-	\caption {Slika obarvana z lažnimi barvami}
+	\begin{subfigure}[t]{0.49\linewidth}
+	\includegraphics[width=\linewidth]{Screenshot_10.png}
+	\caption{Izvirnik}
+\end{subfigure}
+\begin{subfigure}[t]{0.49\linewidth}
+	\includegraphics[width=\linewidth]{false_color.png}
+	\caption{Slika z lažnimi barvami}
+\end{subfigure}
+\caption{Obarvanje slike}
 \end{figure}
 
 
 \section{Zaključek}
-Program po svojih zmožnostih sicer ne ponuja nič več kot tradicionalni programi za urejanje slik, vendar pa jih prekaša v preprostosti uporabe. Uporabnik lahko z preprostim grafičnim vmesnikom hitro dostopa, do vseh metod, ki so se izkazale kot učinkovite pri izboljšanju satelitskih slik in pri tem opazuje kako se spreminja histogram slike. Kot najbolj uporabni sta se po mojem mnenju izkazali funkciji filtriranja z mediano, ki učinkovito odstrani šum in pa izravnava histograma, ki občutno popravi kontrast pri slikah z nizkim razponom sivinskih vrednosti. Zanimive rezultate pa lahko dosežemo tudi z obarvanjem slike. Prav tako se kot uporabna izkaže funkcija obračanja slike (Flip image), saj se orientacija slike spreminja glede na to ali je bil prelet satelita v času zajemanja slike v smeri sever $\rightarrow$ jug ali jug $\rightarrow$ sever.
+Program po svojih zmožnostih sicer ne ponuja nič več kot tradicionalni programi za urejanje slik, vendar pa jih prekaša v preprostosti uporabe. Uporabnik lahko s preprostim grafičnim vmesnikom hitro dostopa, do vseh metod, ki so se izkazale kot učinkovite pri izboljšanju satelitskih slik in pri tem opazuje kako se spreminja histogram slike. Kot najbolj uporabni sta se po mojem mnenju izkazali funkciji filtriranja z mediano, ki učinkovito odstrani šum in pa izravnava histograma, ki občutno popravi kontrast pri slikah z nizkim razponom sivinskih vrednosti. Zanimive rezultate pa lahko dosežemo tudi z obarvanjem slike. Prav tako se kot uporabna izkaže funkcija obračanja slike (Flip image), saj se orientacija slike spreminja glede na to ali je bil prelet satelita v času zajemanja slike v smeri sever $\rightarrow$ jug ali jug $\rightarrow$ sever.
 
 \section{Navodila za uporabo}
 Navodila za uporabo programa se skupaj z navodili za inštalacijo in pripadajočo izvorno kodo nahajajo v repozitoriju, ki je dosegljiv na naslovu:\\
